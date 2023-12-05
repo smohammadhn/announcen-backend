@@ -1,0 +1,8 @@
+{
+  "platform": "node",
+  "app": "smohammadhn-server",
+  "port": 8001,
+  "node": {
+    "version": "18"
+  }
+}
