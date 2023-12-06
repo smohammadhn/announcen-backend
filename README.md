@@ -1,2 +1,1 @@
-# smohammadhn-backend
-The back-end Node.js + Typescript of my portfolio website
+Node/Express + TypeScript back-end for a the dashboard for Announcements
