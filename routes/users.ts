@@ -7,15 +7,6 @@ import bcrypt from 'bcrypt'
 
 const router = express.Router()
 
-// get methods
-router.get('/', async (req: Request, res: Response) => {
-  await User.find()
-    .sort('_id')
-    .then((result) => {
-      res.send(result)
-    })
-})
-
 router.get('/:id', oid, async (req: Request, res: Response) => {
   await User.findById(req.params.id).then((result) => {
     if (!result)
@@ -41,28 +32,6 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
   await incomingItem
     .save()
     .then((result) => res.send(_.pick(result, ['name', 'email', '_id'])))
-})
-
-// put method
-router.put('/:id', oid, async (req: Request, res: Response) => {
-  if (!validateUser(req.body, res)) return
-
-  await User.findByIdAndUpdate(req.params.id, req.body).then((result) => {
-    if (!result)
-      return res.status(404).send('User item with the given id not found!')
-
-    res.send(result)
-  })
-})
-
-// delete method
-router.delete('/:id', oid, async (req: Request, res: Response) => {
-  await User.findByIdAndRemove(req.params.id).then((result) => {
-    if (!result)
-      return res.status(404).send('User item with the given id not found!')
-
-    res.send(result)
-  })
 })
 
 export = router
