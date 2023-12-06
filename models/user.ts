@@ -50,4 +50,22 @@ export function validateUser(body: UserDocument, res: Response) {
   return result.valid
 }
 
+export function validateLogin(body: UserDocument, res: Response) {
+  const schema = Joi.object({
+    email: Joi.string().required().min(5).max(255).email(),
+    password: Joi.string().required().min(5).max(50),
+  })
+
+  const { error } = schema.validate(body)
+
+  const result = {
+    valid: error == null,
+    message: error ? error.details[0].message : null,
+  }
+
+  if (!result.valid) res.status(400).send(errorMessage(result.message))
+
+  return result.valid
+}
+
 export default mongoose.model<UserDocument>('User', userSchema)

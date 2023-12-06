@@ -23,26 +23,24 @@ app.use(express.urlencoded({ extended: true }))
 import morgan from 'morgan'
 app.use(morgan('tiny'))
 
-// startup files imports
+// check for required environment variables before starting the server
 import logger from './startup/logging'
+
+const requiredEnvVars = ['port', 'jwtSecret', 'dbUri']
+requiredEnvVars.forEach((envKey) => {
+  if (!config.get(envKey)) {
+    logger.error(
+      `${envKey} environment variable not found, Have you forgotten to set your environment variables?`
+    )
+    process.exit(1)
+  }
+})
+
+// startup files imports
 import initDb from './startup/db'
 import initRoutes from './startup/routes'
 initDb()
 initRoutes(app)
 
-// check for required environment variables before starting the server
-let isEnvVarsSet = true
-const requiredEnvVars = ['PORT', 'JWT_SECRET']
-requiredEnvVars.forEach((envKey) => {
-  if (!process.env[envKey]) {
-    logger.error(
-      `${envKey} environment variable not found, Have you forgotten to set your environment variables?`
-    )
-    return (isEnvVarsSet = false)
-  }
-})
-
-if (isEnvVarsSet) {
-  const port = config.get('port')
-  app.listen(port, () => logger.info(`Listening on port ${port} ...`))
-}
+const port = config.get('port')
+app.listen(port, () => logger.info(`Listening on port ${port} ...`))

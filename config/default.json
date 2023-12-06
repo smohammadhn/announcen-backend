@@ -1,3 +1,6 @@
 {
-  "name": "announcen"
+  "name": "announcen",
+  "port": "",
+  "jwtSecret": "",
+  "dbUri": ""
 }
