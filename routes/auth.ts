@@ -3,8 +3,6 @@ import User, { validateLogin, UserDocument } from '../models/user'
 import { errorMessage } from '../helpers/core'
 import _ from 'lodash'
 import bcrypt from 'bcrypt'
-import jwt from 'jsonwebtoken'
-import config from 'config'
 
 const router = express.Router()
 
@@ -22,7 +20,7 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
     return res.status(400).send(errorMessage('Invalid email or password'))
 
   // generate auth token
-  const token = jwt.sign({ _id: foundUser._id }, config.get('jwtSecret'))
+  const token = foundUser.generateAuthToken()
 
   return res.status(200).send({
     access: token,

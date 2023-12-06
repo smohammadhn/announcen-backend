@@ -2,11 +2,14 @@ import mongoose from 'mongoose'
 import Joi from 'joi'
 import { Response } from 'express'
 import { errorMessage } from '../helpers/core'
+import jwt from 'jsonwebtoken'
+import config from 'config'
 
 export interface UserDocument {
   name: string
   email: string
   password: string
+  generateAuthToken(): string
 }
 
 const userSchema = new mongoose.Schema({
@@ -30,6 +33,10 @@ const userSchema = new mongoose.Schema({
     maxLength: 1024,
   },
 })
+
+userSchema.methods.generateAuthToken = function () {
+  return jwt.sign({ _id: this._id }, config.get('jwtSecret'))
+}
 
 export function validateUser(body: UserDocument, res: Response) {
   const schema = Joi.object({
