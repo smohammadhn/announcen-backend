@@ -1,6 +1,5 @@
 import { Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import config from 'config'
 import { errorMessage } from '../helpers/core'
 import { CustomRequest } from '../types/global'
 
@@ -9,7 +8,9 @@ export default function (
   res: Response,
   next: NextFunction
 ) {
-  const token = req.header('x-auth-token')
+  const token = req.cookies['auth-token']
+
+  console.log('incoming token :>> ', token)
 
   if (!token)
     return res
@@ -17,7 +18,7 @@ export default function (
       .send(errorMessage('Access denied. No token provided'))
 
   try {
-    const decoded = jwt.verify(token, config.get('jwtSecret'))
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
     if (typeof decoded !== 'string') req.user = { _id: decoded._id }
 
     next()

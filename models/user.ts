@@ -3,21 +3,20 @@ import Joi from 'joi'
 import { Response } from 'express'
 import { errorMessage } from '../helpers/core'
 import jwt from 'jsonwebtoken'
-import config from 'config'
 
 export interface UserDocument {
   email: string
-  password: string
+  password?: string
   generateAuthToken(): string
   name?: string
-  address: string
-  city: string
-  homepage: string
-  description: string
-  logo: string
-  iban: number
-  bic: string
-  stripeAccount: string
+  address?: string
+  city?: string
+  homepage?: string
+  description?: string
+  logo?: string
+  iban?: number
+  bic?: string
+  stripeAccount?: string
 }
 
 const userSchema = new mongoose.Schema({
@@ -82,7 +81,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.generateAuthToken = function () {
-  return jwt.sign({ _id: this._id }, config.get('jwtSecret'))
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET!)
 }
 
 export function validateUser(body: UserDocument, res: Response) {

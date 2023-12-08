@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import config from 'config'
 import logger from './logging'
 
 export default function () {
@@ -7,8 +6,6 @@ export default function () {
   mongoose.set('returnOriginal', false)
 
   mongoose
-    .connect(config.get('dbUri'))
-    .then(() =>
-      logger.info(`Success: connected to ${config.get('dbUri')} database`)
-    )
+    .connect(process.env.DB_CONNECTION_STRING!)
+    .then(() => logger.info(`Success: connected to database`))
 }

@@ -1,34 +1,36 @@
-// Get project absolute Path
-import { resolve } from 'path'
+import 'dotenv/config'
+import express, { Application } from 'express'
+import initDb from './startup/db'
+import initRoutes from './startup/routes'
+import setGlobalHeaders from './middlewares/setGlobalHeaders'
+import cookieParser from 'cookie-parser'
+import morgan from 'morgan'
+import logger from './startup/logging'
 
-// DOTENV: enable usage of .env file for environment variables
-import dotenv from 'dotenv'
-dotenv.config({ path: resolve() + '/.env' })
-
-// CONFIG: getting and setting global configuration for the project
-import config from 'config'
-;(config as any).path = resolve()
+const port = process.env.PORT || 8000
+const app: Application = express()
 
 // Init express and use some built-in middlewares:
 // STATIC: enable /public folder to be shown at domain:port/somethingInsideStaticFolder
 // JSON: if the body of the incoming request contains a JSON object, it populates req.body
 // URLENCODED: parses incoming requests with urlencoded payloads and is based on body-parser (eg. requests using html forms)
-import express, { Application } from 'express'
-const app: Application = express()
 app.use(express.static('public'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Cookie Parser: able to access req.cookies['cookie-name']
+app.use(cookieParser())
+
+// global headers
+app.use(setGlobalHeaders)
+
 // MORGAN: logging api requests
-import morgan from 'morgan'
 app.use(morgan('tiny'))
 
 // check for required environment variables before starting the server
-import logger from './startup/logging'
-
-const requiredEnvVars = ['port', 'jwtSecret', 'dbUri']
+const requiredEnvVars = ['PORT', 'JWT_SECRET', 'DB_CONNECTION_STRING']
 requiredEnvVars.forEach((envKey) => {
-  if (!config.get(envKey)) {
+  if (!process.env[envKey]) {
     logger.error(
       `${envKey} environment variable not found, Have you forgotten to set your environment variables?`
     )
@@ -37,10 +39,7 @@ requiredEnvVars.forEach((envKey) => {
 })
 
 // startup files imports
-import initDb from './startup/db'
-import initRoutes from './startup/routes'
 initDb()
 initRoutes(app)
 
-const port = config.get('port')
 app.listen(port, () => logger.info(`Listening on port ${port} ...`))
