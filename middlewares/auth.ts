@@ -10,8 +10,6 @@ export default function (
 ) {
   const token = req.cookies['auth-token']
 
-  console.log('incoming token :>> ', token)
-
   if (!token)
     return res
       .status(401)
