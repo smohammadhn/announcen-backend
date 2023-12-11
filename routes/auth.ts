@@ -43,10 +43,6 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
   })
 })
 
-router.post('/logout', async (req: CustomRequest, res: Response) => {
-  res.clearCookie('auth-token', COOKIE_OPTIONS).sendStatus(204)
-})
-
 // verify token
 router.post('/verify', auth, async (req: CustomRequest, res: Response) => {
   return res.status(200).send({
