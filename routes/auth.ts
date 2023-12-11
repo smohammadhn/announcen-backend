@@ -1,4 +1,4 @@
-import express, { Response } from 'express'
+import express, { CookieOptions, Response } from 'express'
 import User, { validateLogin, UserDocument } from '../models/user'
 import { errorMessage } from '../helpers/core'
 import _ from 'lodash'
@@ -6,6 +6,13 @@ import bcrypt from 'bcrypt'
 import auth from '../middlewares/auth'
 
 const router = express.Router()
+
+const COOKIE_OPTIONS: CookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+  maxAge: 3600000,
+}
 
 // perform login
 router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
@@ -31,17 +38,13 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
   // generate auth token
   const token = foundUser.generateAuthToken()
 
-  return res
-    .status(200)
-    .cookie('auth-token', token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
-      maxAge: 3600000,
-    })
-    .send({
-      message: 'Logged in successfully.',
-    })
+  return res.status(200).cookie('auth-token', token, COOKIE_OPTIONS).send({
+    message: 'Logged in successfully.',
+  })
+})
+
+router.post('/logout', async (req: CustomRequest, res: Response) => {
+  res.clearCookie('auth-token', COOKIE_OPTIONS).send(204)
 })
 
 // verify token
