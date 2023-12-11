@@ -1,7 +1,7 @@
 {
   "platform": "node",
-  "app": "smohammadhn-server",
-  "port": 8001,
+  "app": "announcen-backend",
+  "port": 8000,
   "node": {
     "version": "18"
   }

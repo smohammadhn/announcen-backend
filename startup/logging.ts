@@ -9,21 +9,23 @@ const logger = createLogger({
   ),
 
   transports: [
-    new transports.File({
+    new transports.Console({
       handleExceptions: true,
       handleRejections: true,
-      filename: 'logfile.log',
+      format: format.combine(format.colorize(), format.simple()),
     }),
   ],
 })
 
 if (process.env.NODE_ENV !== 'production') {
   logger.add(
-    new transports.Console({
-      handleExceptions: true,
-      handleRejections: true,
-      format: format.combine(format.colorize(), format.simple()),
-    })
+    new transports.Console(
+      new transports.File({
+        handleExceptions: true,
+        handleRejections: true,
+        filename: 'logfile.log',
+      })
+    )
   )
 }
 
