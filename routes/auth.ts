@@ -38,8 +38,8 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
   // generate auth token
   const token = foundUser.generateAuthToken()
 
-  return res.status(200).cookie('auth-token', token, COOKIE_OPTIONS).send({
-    message: 'Logged in successfully.',
+  return res.status(200).send({
+    access: token,
   })
 })
 
