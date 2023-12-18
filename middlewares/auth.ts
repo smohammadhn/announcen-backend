@@ -21,6 +21,6 @@ export default function (
 
     next()
   } catch (e) {
-    res.status(400).send(errorMessage('Invalid token: ' + e))
+    res.status(401).send(errorMessage('Invalid token: ' + e))
   }
 }
