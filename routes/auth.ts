@@ -40,14 +40,21 @@ router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
 
   return res.status(200).send({
     access: token,
+    user: foundUser,
   })
 })
 
 // verify token
 router.post('/verify', auth, async (req: CustomRequest, res: Response) => {
+  console.log('verify called')
+
+  const foundUser = await User.findById(req.userId)
+  if (!foundUser)
+    return res.status(401).send(errorMessage('User does not exist.'))
+
   return res.status(200).send({
     message: 'Token is valid.',
-    user: req.user,
+    user: foundUser,
   })
 })
 

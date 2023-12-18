@@ -17,7 +17,7 @@ export default function (
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-    if (typeof decoded !== 'string') req.user = { _id: decoded._id }
+    if (typeof decoded !== 'string') req.userId = decoded._id
 
     next()
   } catch (e) {
