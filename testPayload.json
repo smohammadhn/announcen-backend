@@ -1,0 +1,42 @@
+{
+  "type": "death",
+  "firstName": "oij",
+  "lastName": "oijo",
+  "city": "city1",
+  "maritalStatus": "married",
+  "partnerName": "oijoi",
+  "placeOfBirth": "oijoo",
+  "placeOfDeath": "oijo",
+  "dateOfBirth": "2023-11-30T22:00:00.000Z",
+  "dateOfDeath": "2023-12-17T22:00:00.000Z",
+  "familyRoles": ["father", "brother", "stepfather"],
+  "serviceDate": "oijoi",
+  "serviceTime": "oijoi",
+  "servicePlace": "oijoij",
+  "funeralTime": "oijoij",
+  "funeralPlace": "oijoij",
+  "closestFamilyCircle": false,
+  "relatives": [
+    {
+      "name": "oijoi",
+      "partnerName": "oijoi",
+      "children": "yes",
+      "city": "city1"
+    },
+    {
+      "name": "oijoij",
+      "partnerName": "oijoio",
+      "children": "no",
+      "city": "city2"
+    }
+  ],
+  "nonProfits": [
+    {
+      "name": "oijoij"
+    },
+    {
+      "name": "oijoi"
+    }
+  ],
+  "specialThanks": "oioijo"
+}
