@@ -37,6 +37,8 @@ requiredEnvVars.forEach((envKey) => {
 app.use(
   cors({
     origin: process.env.WEBSITE_URL!,
+    allowedHeaders: ['content-type', 'auth-token', '*'],
+    methods: ['GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, PATCH'],
     credentials: true,
   })
 )
