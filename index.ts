@@ -2,10 +2,10 @@ import 'dotenv/config'
 import express, { Application } from 'express'
 import initDb from './startup/db'
 import initRoutes from './startup/routes'
-import setGlobalHeaders from './middlewares/setGlobalHeaders'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import logger from './startup/logging'
+import cors from 'cors'
 
 const port = process.env.PORT || 8000
 const app: Application = express()
@@ -21,9 +21,6 @@ app.use(express.urlencoded({ extended: true }))
 // Cookie Parser: able to access req.cookies['cookie-name']
 app.use(cookieParser())
 
-// global headers
-app.use(setGlobalHeaders)
-
 // MORGAN: logging api requests
 app.use(morgan('tiny'))
 
@@ -31,12 +28,18 @@ app.use(morgan('tiny'))
 const requiredEnvVars = ['PORT', 'JWT_SECRET', 'DB_CONNECTION_STRING']
 requiredEnvVars.forEach((envKey) => {
   if (!process.env[envKey]) {
-    logger.error(
-      `${envKey} environment variable not found, Have you forgotten to set your environment variables?`
-    )
+    logger.error(`${envKey} environment variable not found, Have you forgotten to set your environment variables?`)
     process.exit(1)
   }
 })
+
+// cors
+app.use(
+  cors({
+    origin: process.env.WEBSITE_URL!,
+    credentials: true,
+  })
+)
 
 // startup files imports
 initDb()
