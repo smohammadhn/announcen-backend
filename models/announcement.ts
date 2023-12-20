@@ -3,6 +3,36 @@ import Joi from 'joi'
 import { Response } from 'express'
 import { errorMessage } from '../helpers/core'
 
+const relativeSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    minLength: 3,
+    maxLength: 50,
+  },
+  partnerName: {
+    type: String,
+    minLength: 3,
+    maxLength: 50,
+  },
+  city: {
+    type: String,
+    minLength: 3,
+    maxLength: 20,
+  },
+  children: {
+    type: String,
+    enum: ['yes', 'no'],
+  },
+})
+
+const nonProfitsSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    minLength: 3,
+    maxLength: 100,
+  },
+})
+
 const announcementSchema = new mongoose.Schema({
   dateOfBirth: String,
   dateOfDeath: String,
@@ -12,6 +42,18 @@ const announcementSchema = new mongoose.Schema({
   closestFamilyCircle: Boolean,
   familyRoles: [String],
   type: { type: String },
+  relatives: [relativeSchema],
+  nonProfits: [nonProfitsSchema],
+
+  userId: {
+    type: String,
+    required: true,
+    validate: {
+      validator: (v: string) => v && v.length === 24,
+      message: 'exactly 24 chars',
+    },
+  },
+
   firstName: {
     type: String,
     minLength: 3,
@@ -58,49 +100,14 @@ const announcementSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 1000,
   },
-
-  relatives: [
-    {
-      type: String,
-      name: {
-        type: String,
-        minLength: 3,
-        maxLength: 50,
-      },
-      partnerName: {
-        type: String,
-        minLength: 3,
-        maxLength: 50,
-      },
-      city: {
-        type: String,
-        minLength: 3,
-        maxLength: 20,
-      },
-      children: {
-        type: String,
-        enum: ['yes', 'no'],
-      },
-    },
-  ],
-
-  nonProfits: [
-    {
-      name: {
-        type: String,
-        minLength: 3,
-        maxLength: 100,
-      },
-    },
-  ],
 })
 
 export type AnnouncementDocument = mongoose.InferSchemaType<typeof announcementSchema>
 
 export function validateAnnouncement(body: AnnouncementDocument, res: Response) {
   const schema = Joi.object({
-    firstName: Joi.string().required().min(5).max(50),
-    lastName: Joi.string().required().min(5).max(50),
+    firstName: Joi.string().required().min(3).max(50),
+    lastName: Joi.string().required().min(3).max(50),
     partnerName: Joi.string().min(3).max(50),
 
     address: Joi.string().min(3).max(500),
@@ -127,7 +134,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
 
     relatives: Joi.array().items(
       Joi.object().keys({
-        name: Joi.string().required().min(5).max(50),
+        name: Joi.string().required().min(3).max(50),
         partnerName: Joi.string().required().min(5).max(50),
         children: Joi.string().valid('yes', 'no'),
         city: Joi.string().min(3).max(20),
@@ -135,7 +142,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
     ),
     nonProfits: Joi.array().items(
       Joi.object().keys({
-        name: Joi.string().required().min(5).max(50),
+        name: Joi.string().required().min(3).max(50),
       })
     ),
   })

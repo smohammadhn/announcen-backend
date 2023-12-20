@@ -4,15 +4,11 @@
 
 import { Request, Response, NextFunction } from 'express'
 import logger from '../startup/logging'
+import { errorMessage } from '../helpers/core'
 
-export default function (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+export default function (err: Error, req: Request, res: Response, next: NextFunction) {
   logger.error(err.message)
-  res.status(400).send('Bad request:>> ' + err)
+  res.status(400).send(errorMessage('Bad request:>> ' + err))
 
   // This mutherfucker took 2 hours of my life, do not delete it
   next()

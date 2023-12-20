@@ -4,6 +4,7 @@ import authMiddleware from '../middlewares/auth'
 
 import users from '../routes/users'
 import auth from '../routes/auth'
+import announcements from '../routes/announcements'
 
 export default async function (app: Application) {
   // unauthorized routes
@@ -14,6 +15,7 @@ export default async function (app: Application) {
   app.use(authMiddleware)
 
   // authorized routes
+  app.use('/api/announcements', announcements)
 
   // global error handler (works in combination with express-async-errors)
   app.use(errorMiddleware)
