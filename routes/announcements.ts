@@ -5,10 +5,25 @@ import _ from 'lodash'
 
 const router = express.Router()
 
+type SortingItems = 'announceDate' | 'eventDate' | 'name'
+
 // get methods
 router.get('/', async (req: CustomRequest, res: Response) => {
-  await Announcement.find({ userId: req.userId })
-    .sort('_id')
+  const type = req.query.type
+  const sorting = req.query.sorting || '_id'
+  const sortingMapper = {
+    announceDate: '_id',
+    eventDate: 'serviceDate',
+    name: [
+      ['firstName', 1],
+      ['lastName', 1],
+    ],
+  } as any
+
+  const filters = { userId: req.userId, ...(type && { type }) }
+
+  await Announcement.find(filters)
+    .sort(sortingMapper[sorting as SortingItems])
     .then((result) => {
       res.send(result)
     })

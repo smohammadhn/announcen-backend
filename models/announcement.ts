@@ -41,7 +41,6 @@ const announcementSchema = new mongoose.Schema({
   serviceTime: String,
   closestFamilyCircle: Boolean,
   familyRoles: [String],
-  type: { type: String },
   relatives: [relativeSchema],
   nonProfits: [nonProfitsSchema],
 
@@ -79,6 +78,10 @@ const announcementSchema = new mongoose.Schema({
   maritalStatus: {
     type: String,
     enum: ['single', 'married'],
+  },
+  type: {
+    type: String,
+    enum: ['birth', 'death', 'wedding'],
   },
   placeOfBirth: {
     type: String,
