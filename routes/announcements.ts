@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express'
+import express, { Response } from 'express'
 import oid from '../middlewares/oid'
 import Announcement, { validateAnnouncement, AnnouncementDocument } from '../models/announcement'
 import _ from 'lodash'
@@ -6,15 +6,15 @@ import _ from 'lodash'
 const router = express.Router()
 
 // get methods
-router.get('/', async (req: Request, res: Response) => {
-  await Announcement.find()
+router.get('/', async (req: CustomRequest, res: Response) => {
+  await Announcement.find({ userId: req.userId })
     .sort('_id')
     .then((result) => {
       res.send(result)
     })
 })
 
-router.get('/:id', oid, async (req: Request, res: Response) => {
+router.get('/:id', oid, async (req: CustomRequest, res: Response) => {
   await Announcement.findById(req.params.id).then((result) => {
     if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
