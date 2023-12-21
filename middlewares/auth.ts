@@ -8,7 +8,7 @@ export default function (
   res: Response,
   next: NextFunction
 ) {
-  const token = req.cookies['auth-token']
+  const token = req.headers['authorization']
 
   if (!token)
     return res
