@@ -77,13 +77,18 @@ const announcementSchema = new mongoose.Schema({
   },
   maritalStatus: {
     type: String,
-    enum: ['single', 'married'],
+    enum: ['single', 'married', 'partner', 'widow', 'widower'],
   },
   type: {
     type: String,
     enum: ['birth', 'death', 'wedding'],
   },
   placeOfBirth: {
+    type: String,
+    minLength: 3,
+    maxLength: 500,
+  },
+  placeOfDeath: {
     type: String,
     minLength: 3,
     maxLength: 500,
@@ -103,6 +108,11 @@ const announcementSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 1000,
   },
+  obituary: {
+    type: String,
+    minLength: 3,
+    maxLength: 5000,
+  },
 })
 
 export type AnnouncementDocument = mongoose.InferSchemaType<typeof announcementSchema>
@@ -119,6 +129,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
     funeralPlace: Joi.string().min(3).max(500),
     servicePlace: Joi.string().min(3).max(500),
     specialThanks: Joi.string().min(3).max(1000),
+    obituary: Joi.string().min(3).max(5000),
     city: Joi.string().min(3).max(20),
 
     familyRoles: Joi.array().items(Joi.string()),

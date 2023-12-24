@@ -56,16 +56,16 @@ router.post('/', async (req: CustomRequest, res: Response) => {
     'city',
     'maritalStatus',
     'placeOfBirth',
+    'placeOfDeath',
     'servicePlace',
     'funeralPlace',
     'specialThanks',
     'relatives',
     'nonProfits',
+    'obituary',
   ]) as AnnouncementDocument
 
   if (req.userId) result.userId = req.userId
-
-  console.log('result :>> ', result)
 
   const incomingItem = new Announcement(result)
   await incomingItem.save().then((result) => res.send(result))
