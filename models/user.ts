@@ -58,25 +58,30 @@ const userSchema = new mongoose.Schema({
     minLength: 5,
     maxLength: 150,
   },
+  postalCode: {
+    type: String,
+    minLength: 5,
+    maxLength: 20,
+  },
   logo: {
     type: String,
     minLength: 10,
     maxLength: 1000,
   },
   iban: {
-    type: Number,
+    type: String,
     minLength: 10,
     maxLength: 50,
   },
   bic: {
-    type: Number,
-    minLength: 10,
-    maxLength: 50,
+    type: String,
+    minLength: 5,
+    maxLength: 30,
   },
   stripeAccount: {
-    type: Number,
-    minLength: 10,
-    maxLength: 50,
+    type: String,
+    minLength: 5,
+    maxLength: 30,
   },
 })
 
@@ -87,16 +92,16 @@ userSchema.methods.generateAuthToken = function () {
 export function validateUser(body: UserDocument, res: Response) {
   const schema = Joi.object({
     email: Joi.string().required().min(5).max(255).email(),
-    password: Joi.string().required().min(5).max(50),
-    name: Joi.string().min(5).max(50),
-    address: Joi.string().min(5).max(50),
-    city: Joi.string().min(5).max(50),
-    homepage: Joi.string().min(5).max(50),
-    description: Joi.string().min(5).max(50),
-    logo: Joi.string().min(5).max(50),
-    iban: Joi.number().min(5).max(50),
-    bic: Joi.string().min(5).max(50),
-    stripeAccount: Joi.string().min(5).max(50),
+    name: Joi.string().min(3).max(50).allow(''),
+    address: Joi.string().min(5).max(500).allow(''),
+    city: Joi.string().min(3).max(20).allow(''),
+    homepage: Joi.string().min(5).max(50).allow(''),
+    description: Joi.string().min(5).max(150).allow(''),
+    logo: Joi.string().min(5).max(50).allow(''),
+    iban: Joi.string().min(5).max(30).allow(''),
+    bic: Joi.string().min(5).max(30).allow(''),
+    stripeAccount: Joi.string().min(5).max(30).allow(''),
+    postalCode: Joi.string().min(5).max(30).allow(''),
   })
 
   const { error } = schema.validate(body)
