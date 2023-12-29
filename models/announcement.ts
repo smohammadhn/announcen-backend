@@ -11,7 +11,6 @@ const relativeSchema = new mongoose.Schema({
   },
   partnerName: {
     type: String,
-    minLength: 3,
     maxLength: 50,
   },
   city: {
@@ -34,6 +33,7 @@ const nonProfitsSchema = new mongoose.Schema({
 })
 
 const announcementSchema = new mongoose.Schema({
+  createdAt: String,
   dateOfBirth: String,
   dateOfDeath: String,
   funeralTime: String,
@@ -67,7 +67,6 @@ const announcementSchema = new mongoose.Schema({
   },
   partnerName: {
     type: String,
-    minLength: 3,
     maxLength: 50,
   },
   city: {
@@ -110,7 +109,7 @@ const announcementSchema = new mongoose.Schema({
   },
   obituary: {
     type: String,
-    minLength: 3,
+    minLength: 10,
     maxLength: 5000,
   },
 })
@@ -121,7 +120,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
   const schema = Joi.object({
     firstName: Joi.string().required().min(3).max(50),
     lastName: Joi.string().required().min(3).max(50),
-    partnerName: Joi.string().allow(null).min(3).max(50),
+    partnerName: Joi.string().allow('').min(3).max(50),
 
     address: Joi.string().min(3).max(500),
     placeOfBirth: Joi.string().min(3).max(500),
@@ -129,7 +128,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
     funeralPlace: Joi.string().min(3).max(500),
     servicePlace: Joi.string().min(3).max(500),
     specialThanks: Joi.string().min(3).max(1000),
-    obituary: Joi.string().min(3).max(5000),
+    obituary: Joi.string().required().min(10).max(5000),
     city: Joi.string().min(3).max(20),
 
     familyRoles: Joi.array().items(Joi.string()),
@@ -149,9 +148,9 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
     relatives: Joi.array().items(
       Joi.object().keys({
         name: Joi.string().required().min(3).max(50),
-        partnerName: Joi.string().required().min(5).max(50),
+        partnerName: Joi.string().allow('').min(5).max(50),
         children: Joi.string().valid('yes', 'no'),
-        city: Joi.string().min(3).max(20),
+        city: Joi.string().min(3).max(20).allow(null),
       })
     ),
     nonProfits: Joi.array().items(
