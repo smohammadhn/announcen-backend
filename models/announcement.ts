@@ -76,7 +76,6 @@ const announcementSchema = new mongoose.Schema({
   },
   maritalStatus: {
     type: String,
-    enum: ['single', 'married', 'partner', 'widow', 'widower', null],
   },
   type: {
     type: String,
@@ -133,7 +132,7 @@ export function validateAnnouncement(body: AnnouncementDocument, res: Response) 
 
     familyRoles: Joi.array().items(Joi.string()),
 
-    maritalStatus: Joi.string().allow(null).valid('single', 'married', 'partner', 'widow', 'widower', null),
+    maritalStatus: Joi.string().allow(null).valid('single', 'married', 'partner', 'husband', 'wife', null),
 
     dateOfBirth: Joi.string().length(10),
     dateOfDeath: Joi.string().length(10),
