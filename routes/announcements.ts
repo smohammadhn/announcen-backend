@@ -2,28 +2,32 @@ import express, { Response } from 'express'
 import oid from '../middlewares/oid'
 import Announcement, { validateAnnouncement, AnnouncementDocument } from '../models/announcement'
 import _ from 'lodash'
+import moment from 'moment'
+import { SortOrder } from 'mongoose'
 
 const router = express.Router()
-
-type SortingItems = 'announceDate' | 'eventDate' | 'name'
 
 // get methods
 router.get('/', async (req: CustomRequest, res: Response) => {
   const type = req.query.type
-  const sorting = req.query.sorting || '_id'
-  const sortingMapper = {
-    announceDate: '_id',
-    eventDate: 'serviceDate',
-    name: [
-      ['firstName', 1],
-      ['lastName', 1],
-    ],
-  } as any
+  let sortParams: { [key: string]: SortOrder } = { _id: 1 }
+
+  const sortingMapper: { [key: string]: typeof sortParams } = {
+    announceDate: { _id: -1 },
+    eventDate: { serviceDate: 1 },
+    name: {
+      firstName: 1,
+      lastName: 1,
+    },
+  } as const
+
+  const sort = req.query.sorting as keyof typeof sortingMapper
+  if (sort) sortParams = sortingMapper[sort || 'announceDate']
 
   const filters = { userId: req.userId, ...(type && { type }) }
 
   await Announcement.find(filters)
-    .sort(sortingMapper[sorting as SortingItems])
+    .sort(sortParams)
     .then((result) => {
       res.send(result)
     })
@@ -65,6 +69,7 @@ router.post('/', async (req: CustomRequest, res: Response) => {
     'obituary',
   ]) as AnnouncementDocument
 
+  result.createdAt = moment().toISOString()
   if (req.userId) result.userId = req.userId
 
   const incomingItem = new Announcement(result)
