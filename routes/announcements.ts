@@ -77,25 +77,23 @@ router.post('/', async (req: CustomRequest, res: Response) => {
 })
 
 // put method
-// router.put('/:id', oid, async (req: Request, res: Response) => {
-//   if (!validateAnnouncement(req.body, res)) return
+router.put('/:id', oid, async (req: CustomRequest, res: Response) => {
+  if (!validateAnnouncement(req.body, res)) return
 
-//   await Announcement.findByIdAndUpdate(req.params.id, req.body).then((result) => {
-//     if (!result)
-//       return res.status(404).send('Announcement item with the given id not found!')
+  await Announcement.findByIdAndUpdate(req.params.id, req.body).then((result) => {
+    if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
-//     res.send(result)
-//   })
-// })
+    res.send(result)
+  })
+})
 
 // delete method
-// router.delete('/:id', oid, async (req: Request, res: Response) => {
-//   await Announcement.findByIdAndRemove(req.params.id).then((result) => {
-//     if (!result)
-//       return res.status(404).send('Announcement item with the given id not found!')
+router.delete('/:id', oid, async (req: CustomRequest, res: Response) => {
+  await Announcement.findByIdAndRemove(req.params.id).then((result) => {
+    if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
-//     res.send(result)
-//   })
-// })
+    res.send(result)
+  })
+})
 
 export = router
