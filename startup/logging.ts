@@ -2,11 +2,7 @@ import { createLogger, format, transports } from 'winston'
 import 'express-async-errors'
 
 const logger = createLogger({
-  format: format.combine(
-    format.timestamp({ format: 'MMM-DD-YYYY HH:mm:ss' }),
-    format.align(),
-    format.json()
-  ),
+  format: format.combine(format.timestamp({ format: 'MMM-DD-YYYY HH:mm:ss' }), format.align(), format.json()),
 
   transports: [
     new transports.Console({
@@ -29,4 +25,4 @@ if (process.env.NODE_ENV !== 'production') {
   )
 }
 
-export = logger
+export default logger

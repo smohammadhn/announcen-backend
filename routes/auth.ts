@@ -1,29 +1,23 @@
-import express, { CookieOptions, Response } from 'express'
-import User, { validateLogin, UserDocument } from '../models/user'
+import express, { Response } from 'express'
 import { errorMessage } from '../helpers/core'
-import _ from 'lodash'
-import bcrypt from 'bcrypt'
 import auth from '../middlewares/auth'
+import User, { UserDocument } from '../models/user'
 
 const router = express.Router()
 
 // perform login
 router.post('/', async ({ body }: { body: UserDocument }, res: Response) => {
-  if (!validateLogin(body, res)) return
+  const { valid, message } = User.validateLogin(body)
+  if (!valid) res.status(400).send(errorMessage(message))
 
-  // make sure there is a user with this email in the database
+  // make sure there IS a user with this email in the database
   const foundUser = await User.findOne({ email: body.email })
   if (!foundUser) return res.status(400).send(errorMessage('Invalid email or password'))
 
-  if (body.password && foundUser.password) {
-    const validPassword = await bcrypt.compare(body.password, foundUser.password)
+  // body and foundUser both guaranteed to have password
+  const isPasswordValid = foundUser.checkPassword(body.password)
+  if (!isPasswordValid) return res.status(400).send(errorMessage('Invalid email or password'))
 
-    if (!validPassword) return res.status(400).send(errorMessage('Invalid email or password'))
-  } else {
-    return res.status(400).send(errorMessage('Invalid email or password'))
-  }
-
-  // generate auth token
   const token = foundUser.generateAuthToken()
 
   return res.status(200).send({
@@ -43,4 +37,4 @@ router.post('/verify', auth, async (req: CustomRequest, res: Response) => {
   })
 })
 
-export = router
+export default router

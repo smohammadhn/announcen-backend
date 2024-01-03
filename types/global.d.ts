@@ -1,9 +1,13 @@
 import { Request } from 'express'
+import { SortOrder } from 'mongoose'
+
+export {}
 
 declare global {
-  interface CustomRequest extends Request {
+  // order: B:request body, P:params, Q:query
+  type CustomRequest<B = {}, P = {}, Q = {}> = Request<P, {}, B, Q> & {
     userId?: string
   }
-}
 
-export { CustomRequest }
+  type MongooseSortInput = Record<string, SortOrder>
+}

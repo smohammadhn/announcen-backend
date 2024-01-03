@@ -6,7 +6,7 @@ import users from '../routes/users'
 import auth from '../routes/auth'
 import announcements from '../routes/announcements'
 
-export default async function (app: Application) {
+export default function (app: Application) {
   // unauthorized routes
   app.use('/api/users', users)
   app.use('/api/auth', auth)

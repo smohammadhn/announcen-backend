@@ -1,18 +1,25 @@
 import express, { Response } from 'express'
+import { errorMessage } from '../helpers/core'
 import oid from '../middlewares/oid'
-import Announcement, { validateAnnouncement, AnnouncementDocument } from '../models/announcement'
-import _ from 'lodash'
-import moment from 'moment'
-import { SortOrder } from 'mongoose'
+import Announcement, { AnnouncementDocument } from '../models/announcement'
+
+interface IGetAnnouncementQuery {
+  type?: string
+  sorting?: string
+}
 
 const router = express.Router()
 
 // get methods
-router.get('/', async (req: CustomRequest, res: Response) => {
-  const type = req.query.type
-  let sortParams: { [key: string]: SortOrder } = { _id: 1 }
+router.get('/', async (req: CustomRequest<{}, {}, IGetAnnouncementQuery>, res: Response) => {
+  const filters: {
+    userId: string
+    type?: string
+  } = { userId: req.userId! }
 
-  const sortingMapper: { [key: string]: typeof sortParams } = {
+  // acts as a mapper: receives sort slug and returns a valid sort object which mongoose identifies
+  // incoming sort slug has to be one of the values of this object
+  const availableSortingOptions: { [key: string]: MongooseSortInput } = {
     announceDate: { _id: -1 },
     eventDate: { serviceDate: 1 },
     name: {
@@ -21,19 +28,26 @@ router.get('/', async (req: CustomRequest, res: Response) => {
     },
   } as const
 
-  const sort = req.query.sorting as keyof typeof sortingMapper
-  if (sort) sortParams = sortingMapper[sort || 'announceDate']
+  // set default value for sort if not specified
+  let sortObject: MongooseSortInput = { _id: 1 }
+  const sortSlug = 'announceDate'
 
-  const filters = { userId: req.userId, ...(type && { type }) }
+  // if sort is valid => replace the default sort with new mongoose sort object received from the mapper
+  const isSortValid = req.query.sorting && Object.keys(availableSortingOptions).includes(req.query.sorting)
+  if (isSortValid) sortObject = availableSortingOptions[sortSlug]
+
+  // filter by type if specified
+  const type = req.query.type
+  if (type) filters.type = type
 
   await Announcement.find(filters)
-    .sort(sortParams)
+    .sort(sortObject)
     .then((result) => {
       res.send(result)
     })
 })
 
-router.get('/:id', oid, async (req: CustomRequest, res: Response) => {
+router.get('/:id', oid, async (req: CustomRequest<{}, { id: string }>, res: Response) => {
   await Announcement.findById(req.params.id).then((result) => {
     if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
@@ -42,43 +56,19 @@ router.get('/:id', oid, async (req: CustomRequest, res: Response) => {
 })
 
 // post methods
-router.post('/', async (req: CustomRequest, res: Response) => {
-  if (!validateAnnouncement(req.body, res)) return
+router.post('/', async (req: CustomRequest<AnnouncementDocument>, res: Response) => {
+  const { valid, message } = Announcement.validatePayload(req.body)
+  if (!valid) res.status(400).send(errorMessage(message))
 
-  const result = _.pick(req.body, [
-    'dateOfBirth',
-    'dateOfDeath',
-    'funeralTime',
-    'serviceDate',
-    'serviceTime',
-    'closestFamilyCircle',
-    'familyRoles',
-    'type',
-    'firstName',
-    'lastName',
-    'partnerName',
-    'city',
-    'maritalStatus',
-    'placeOfBirth',
-    'placeOfDeath',
-    'servicePlace',
-    'funeralPlace',
-    'specialThanks',
-    'relatives',
-    'nonProfits',
-    'obituary',
-  ]) as AnnouncementDocument
-
-  result.createdAt = moment().toISOString()
-  if (req.userId) result.userId = req.userId
-
-  const incomingItem = new Announcement(result)
+  // req.userId is guaranteed to exist because of auth middleware
+  const incomingItem = Announcement.createFromRequest(req.body, req.userId!)
   await incomingItem.save().then((result) => res.send(result))
 })
 
 // put method
-router.put('/:id', oid, async (req: CustomRequest, res: Response) => {
-  if (!validateAnnouncement(req.body, res)) return
+router.put('/:id', oid, async (req: CustomRequest<AnnouncementDocument, { id: string }>, res: Response) => {
+  const { valid, message } = Announcement.validatePayload(req.body)
+  if (!valid) res.status(400).send(errorMessage(message))
 
   await Announcement.findByIdAndUpdate(req.params.id, req.body).then((result) => {
     if (!result) return res.status(404).send('Announcement item with the given id not found!')
@@ -88,12 +78,12 @@ router.put('/:id', oid, async (req: CustomRequest, res: Response) => {
 })
 
 // delete method
-router.delete('/:id', oid, async (req: CustomRequest, res: Response) => {
-  await Announcement.findByIdAndRemove(req.params.id).then((result) => {
+router.delete('/:id', oid, async (req: CustomRequest<{}, { id: string }>, res: Response) => {
+  await Announcement.findByIdAndDelete(req.params.id).then((result) => {
     if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
     res.send(result)
   })
 })
 
-export = router
+export default router
