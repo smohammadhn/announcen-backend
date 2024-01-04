@@ -1,11 +1,12 @@
-import 'dotenv/config'
 import express, { Application } from 'express'
-import initDb from './startup/db'
-import initRoutes from './startup/routes'
-import cookieParser from 'cookie-parser'
+import 'dotenv/config'
 import morgan from 'morgan'
-import logger from './startup/logging'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
+
+import initDb from '@/startup/db'
+import initRoutes from '@/startup/routes'
+import logger from '@/startup/logging'
 
 const port = process.env.PORT || 8000
 const app: Application = express()
