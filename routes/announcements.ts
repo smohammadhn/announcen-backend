@@ -19,14 +19,14 @@ router.get('/', async (req: CustomRequest<{}, {}, IGetAnnouncementQuery>, res: R
 
   // acts as a mapper: receives sort slug and returns a valid sort object which mongoose identifies
   // incoming sort slug has to be one of the values of this object
-  const availableSortingOptions: { [key: string]: MongooseSortInput } = {
+  const availableSortingOptions: Record<string, MongooseSortInput> = {
     announceDate: { _id: -1 },
     eventDate: { serviceDate: 1 },
     name: {
       firstName: 1,
       lastName: 1,
     },
-  } as const
+  }
 
   // set default value for sort if not specified
   let sortObject: MongooseSortInput = { _id: 1 }
@@ -37,7 +37,7 @@ router.get('/', async (req: CustomRequest<{}, {}, IGetAnnouncementQuery>, res: R
   if (isSortValid) sortObject = availableSortingOptions[sortSlug]
 
   // filter by type if specified
-  const type = req.query.type
+  const type = req.query.type as AnnouncementDocument['type']
   if (type) filters.type = type
 
   await Announcement.find(filters)
