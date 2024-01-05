@@ -1,7 +1,7 @@
 import express, { Response } from 'express'
-import { errorMessage } from '../helpers/core'
-import auth from '../middlewares/auth'
-import User, { UserDocument } from '../models/user'
+import { errorMessage } from '@/helpers/core'
+import auth from '@/middlewares/auth'
+import User, { UserDocument } from '@/models/user'
 
 const router = express.Router()
 

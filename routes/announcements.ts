@@ -1,7 +1,7 @@
 import express, { Response } from 'express'
-import { errorMessage } from '../helpers/core'
-import oid from '../middlewares/oid'
-import Announcement, { AnnouncementDocument } from '../models/announcement'
+import { errorMessage } from '@/helpers/core'
+import oid from '@/middlewares/oid'
+import Announcement, { AnnouncementDocument } from '@/models/announcement'
 
 interface IGetAnnouncementQuery {
   type?: string

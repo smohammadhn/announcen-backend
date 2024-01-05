@@ -1,6 +1,6 @@
 import { Response, NextFunction, Request } from 'express'
 import jwt from 'jsonwebtoken'
-import { errorMessage } from '../helpers/core'
+import { errorMessage } from '@/helpers/core'
 
 export default function (req: CustomRequest, res: Response, next: NextFunction) {
   const token = req.headers['authorization']

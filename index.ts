@@ -9,6 +9,7 @@ import '@/startup/checkEnv'
 import initDb from '@/startup/db'
 import initRoutes from '@/startup/routes'
 import logger from '@/startup/logging'
+import errorMiddleware from '@/middlewares/error'
 
 const port = process.env.PORT || 8000
 const app: Application = express()
@@ -29,5 +30,9 @@ app.use(
 
 await initDb()
 initRoutes(app)
+
+// global error handler (works in combination with express-async-errors)
+// must be AFTER all routes
+app.use(errorMiddleware)
 
 app.listen(port, () => logger.info(`Listening on port ${port} ...`))

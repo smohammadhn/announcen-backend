@@ -3,8 +3,8 @@
 // (as a result of 'express-async-errors' package)
 
 import { Request, Response, NextFunction } from 'express'
-import logger from '../startup/logging'
-import { errorMessage } from '../helpers/core'
+import logger from '@/startup/logging'
+import { errorMessage } from '@/helpers/core'
 
 export default function (err: Error, req: Request, res: Response, next: NextFunction) {
   logger.error(err.message)
