@@ -14,9 +14,8 @@ const relativeSchema = new mongoose.Schema({
     maxLength: 50,
   },
   city: {
-    type: String,
-    minLength: 3,
-    maxLength: 20,
+    type: Number,
+    ref: 'City',
   },
   children: {
     type: String,
@@ -70,9 +69,8 @@ const announcementSchema = new mongoose.Schema(
       maxLength: 50,
     },
     city: {
-      type: String,
-      minLength: 3,
-      maxLength: 20,
+      type: Number,
+      ref: 'City',
     },
     maritalStatus: {
       type: String,

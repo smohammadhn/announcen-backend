@@ -42,17 +42,28 @@ router.get('/', async (req: CustomRequest<{}, {}, IGetAnnouncementQuery>, res: R
 
   await Announcement.find(filters)
     .sort(sortObject)
+    .populate({
+      path: 'city',
+      model: 'City',
+      foreignField: 'id',
+    })
     .then((result) => {
       res.send(result)
     })
 })
 
 router.get('/:id', oid, async (req: CustomRequest<{}, { id: string }>, res: Response) => {
-  await Announcement.findById(req.params.id).then((result) => {
-    if (!result) return res.status(404).send('Announcement item with the given id not found!')
+  await Announcement.findById(req.params.id)
+    .populate({
+      path: 'city',
+      model: 'City',
+      foreignField: 'id',
+    })
+    .then((result) => {
+      if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
-    res.send(result)
-  })
+      res.send(result)
+    })
 })
 
 // post methods
