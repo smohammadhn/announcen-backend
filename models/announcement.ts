@@ -1,4 +1,3 @@
-import { Response } from 'express'
 import Joi from 'joi'
 import _ from 'lodash'
 import mongoose from 'mongoose'
@@ -23,14 +22,6 @@ const relativeSchema = new mongoose.Schema({
   },
 })
 
-const nonProfitsSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minLength: 3,
-    maxLength: 100,
-  },
-})
-
 const announcementSchema = new mongoose.Schema(
   {
     dateOfBirth: String,
@@ -41,7 +32,13 @@ const announcementSchema = new mongoose.Schema(
     closestFamilyCircle: Boolean,
     familyRoles: [String],
     relatives: [relativeSchema],
-    nonProfits: [nonProfitsSchema],
+
+    nonProfits: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: 'Organization',
+      },
+    ],
 
     userId: {
       type: String,
@@ -162,11 +159,7 @@ announcementSchema.statics.validatePayload = function (body: AnnouncementDocumen
         city: Joi.number().allow(null),
       })
     ),
-    nonProfits: Joi.array().items(
-      Joi.object().keys({
-        name: Joi.string().required().min(3).max(50),
-      })
-    ),
+    nonProfits: Joi.array().items(Joi.string()),
   })
 
   const { error } = schema.validate(body)
