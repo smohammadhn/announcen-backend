@@ -5,9 +5,7 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "build": "rimraf dist && tsc -p .",
-    "prestart": "npm run build",
-    "start": "tsx dist/index.js",
+    "start": "tsx index.ts",
     "dev": "tsx watch index.ts"
   },
   "keywords": [],
