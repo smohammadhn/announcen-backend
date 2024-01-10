@@ -144,7 +144,7 @@ announcementSchema.statics.validatePayload = function (body: AnnouncementDocumen
     servicePlace: Joi.string().min(3).max(500),
     specialThanks: Joi.string().min(3).max(1000),
     obituary: Joi.string().required().min(10).max(5000),
-    city: Joi.string().min(3).max(20),
+    city: Joi.number(),
     familyRoles: Joi.array().items(Joi.string()),
     maritalStatus: Joi.string().allow(null).valid('single', 'married', 'partner', 'husband', 'wife'),
     dateOfBirth: Joi.string().length(10),
