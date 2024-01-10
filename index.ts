@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-import express, { Application } from 'express'
+import express from 'express'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -12,7 +12,7 @@ import logger from '@/startup/logging'
 import errorMiddleware from '@/middlewares/error'
 
 const port = process.env.PORT || 8000
-const app: Application = express()
+const app = express()
 
 app.use(express.static('public'))
 app.use(express.json())

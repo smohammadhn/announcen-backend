@@ -159,7 +159,7 @@ announcementSchema.statics.validatePayload = function (body: AnnouncementDocumen
         name: Joi.string().required().min(3).max(50),
         partnerName: Joi.string().allow('').min(5).max(50),
         children: Joi.string().valid('yes', 'no'),
-        city: Joi.string().min(3).max(20).allow(null),
+        city: Joi.number().allow(null),
       })
     ),
     nonProfits: Joi.array().items(

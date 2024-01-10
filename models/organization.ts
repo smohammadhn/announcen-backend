@@ -1,5 +1,7 @@
 import mongoose from 'mongoose'
 import Joi from 'joi'
+import bcrypt from 'bcrypt'
+import _ from 'lodash'
 
 const organizationSchema = new mongoose.Schema(
   {
@@ -9,6 +11,12 @@ const organizationSchema = new mongoose.Schema(
       minLength: 5,
       maxLength: 255,
       unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+      minLength: 5,
+      maxLength: 1024,
     },
     name: {
       type: String,
@@ -21,9 +29,8 @@ const organizationSchema = new mongoose.Schema(
       maxLength: 500,
     },
     city: {
-      type: String,
-      minLength: 3,
-      maxLength: 20,
+      type: Number,
+      ref: 'City',
     },
     homepage: {
       type: String,
@@ -67,14 +74,26 @@ const organizationSchema = new mongoose.Schema(
 export type OrganizationDocument = mongoose.InferSchemaType<typeof organizationSchema> & {
   createdAt: Date
   updatedAt: Date
+  checkPassword: (password: string) => Promise<boolean>
+  isModified(path?: string): boolean
 }
 
-export function validateOrganization(body: OrganizationDocument) {
+interface OrganizationModel extends mongoose.Model<OrganizationDocument> {
+  validateOrganization: (body: OrganizationDocument) => { valid: boolean; message: string | null }
+  createFromRequest: (body: OrganizationDocument) => mongoose.Document<OrganizationDocument>
+}
+
+organizationSchema.methods.checkPassword = async function (password: string) {
+  await bcrypt.compare(password, this.password)
+}
+
+organizationSchema.statics.validateOrganization = function (body: OrganizationDocument) {
   const schema = Joi.object({
     email: Joi.string().required().min(5).max(255).email(),
+    password: Joi.string().required().min(5).max(50),
     name: Joi.string().min(3).max(50).allow(''),
     address: Joi.string().min(5).max(500).allow(''),
-    city: Joi.string().min(3).max(20).allow(''),
+    city: Joi.number(),
     homepage: Joi.string().min(5).max(50).allow(''),
     description: Joi.string().min(5).max(150).allow(''),
     logo: Joi.string().min(5).max(50).allow(''),
@@ -92,4 +111,25 @@ export function validateOrganization(body: OrganizationDocument) {
   }
 }
 
-export default mongoose.model<OrganizationDocument>('Organization', organizationSchema)
+organizationSchema.statics.createFromRequest = function (body: OrganizationDocument) {
+  const allowedFields = Object.keys(this.schema.paths).filter((field) => field !== '_id' && field !== '__v')
+
+  const filteredBody = _.pick(body, allowedFields)
+  return new this(filteredBody)
+}
+
+organizationSchema.pre<OrganizationDocument>('save', async function (next) {
+  if (this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 10)
+  }
+  next()
+})
+
+organizationSchema.set('toJSON', {
+  transform: function (_, ret) {
+    delete ret.__v
+    delete ret.password
+  },
+})
+
+export default mongoose.model<OrganizationDocument, OrganizationModel>('Organization', organizationSchema)
