@@ -33,9 +33,9 @@ router.get('/', async (req: CustomRequest<{}, {}, IGetAnnouncementQuery>, res: R
 
   // filter by type if specified
   const filters: {
-    type?: string
+    type?: AnnouncementDocument['type']
   } = {}
-  const type = req.query.type as AnnouncementDocument['type']
+  const type = req.query.type
   if (type) filters.type = type
 
   await Announcement.find(filters)
