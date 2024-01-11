@@ -15,13 +15,11 @@ const logger = createLogger({
 
 if (process.env.NODE_ENV !== 'production') {
   logger.add(
-    new transports.Console(
-      new transports.File({
-        handleExceptions: true,
-        handleRejections: true,
-        filename: 'logfile.log',
-      })
-    )
+    new transports.File({
+      handleExceptions: true,
+      handleRejections: true,
+      filename: 'logfile.log',
+    })
   )
 }
 
