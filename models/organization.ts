@@ -21,7 +21,7 @@ const organizationSchema = new mongoose.Schema(
     name: {
       type: String,
       minLength: 5,
-      maxLength: 50,
+      maxLength: 500,
     },
     address: {
       type: String,
@@ -44,8 +44,7 @@ const organizationSchema = new mongoose.Schema(
     },
     postalCode: {
       type: String,
-      minLength: 5,
-      maxLength: 20,
+      maxLength: 4,
     },
     logo: {
       type: String,
@@ -91,7 +90,7 @@ organizationSchema.statics.validateOrganization = function (body: OrganizationDo
   const schema = Joi.object({
     email: Joi.string().required().min(5).max(255).email(),
     password: Joi.string().required().min(5).max(50),
-    name: Joi.string().min(3).max(50).allow(''),
+    name: Joi.string().min(3).max(500).allow(''),
     address: Joi.string().min(5).max(500).allow(''),
     city: Joi.number(),
     homepage: Joi.string().min(5).max(50).allow(''),
@@ -100,7 +99,7 @@ organizationSchema.statics.validateOrganization = function (body: OrganizationDo
     iban: Joi.string().min(5).max(30).allow(''),
     bic: Joi.string().min(5).max(30).allow(''),
     stripeAccount: Joi.string().min(5).max(30).allow(''),
-    postalCode: Joi.string().min(5).max(30).allow(''),
+    postalCode: Joi.string().length(4).allow(''),
   })
 
   const { error } = schema.validate(body)
