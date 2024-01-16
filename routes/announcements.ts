@@ -69,6 +69,7 @@ router.get('/:id', oid, async (req: CustomRequest<{}, { id: string }>, res: Resp
       model: 'City',
       foreignField: 'id',
     })
+    .populate('nonProfits')
     .then((result) => {
       if (!result) return res.status(404).send('Announcement item with the given id not found!')
 
